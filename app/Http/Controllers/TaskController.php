@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class TaskController extends Controller
 {
@@ -60,5 +61,28 @@ class TaskController extends Controller
     {
         return $this->belongsTo(User::class, 'task_id', 'id');
     }
+
+    function ajaxloadtasks(Request $request) {
+        $tasks = Task::with('user');
+
+        return DataTables::of($tasks)
+        ->addIndexColumn()
+        ->addColumn('bil', function($task){
+            return '1';
+        })
+        ->addColumn('due_date', function($task){
+            return \Carbon\Carbon::parse($task->due_date)->format('d-m-Y');
+        })
+
+        ->addColumn('user', function($task){
+            return $task->user->name;
+        })
+        ->addColumn('action', function($task){
+            return '<a class="btn btn-primary btn-sm" href="'.route('tasks.show',['task'=>$task->uuid]).'">Show</a>';
+        })
+        ->rawColumns(['action'])
+        ->make(true);
+    }
+
     //
 }
