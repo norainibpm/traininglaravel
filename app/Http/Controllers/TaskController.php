@@ -8,37 +8,44 @@ use Illuminate\Http\Request;
 class TaskController extends Controller
 {
     function index() {
-        $tasks = Task::all();
-        //select * from tasks
+        // $tasks = Task::all();
+        // //select * from tasks
 
-        $tasks = Task::limit(10)->get();
-        //select * from tasks limit 10
+        // $tasks = Task::limit(10)->get();
+        // //select * from tasks limit 10
 
-        $tasks = Task::latest()->limit(10)->get();
-        //select * from tasks orderby created_at desc limit 10
+        // $tasks = Task::latest()->limit(10)->get();
+        // //select * from tasks orderby created_at desc limit 10
 
-        $tasks = Task::where ('id', '<', 30)->get();
-        //select * from tasks where id <30
+        // $tasks = Task::where ('id', '<', 30)->get();
+        // //select * from tasks where id <30
 
-        $tasks = Task::where ('id', '<=', 30)
-                    ->where('id','>=','20')->get();
+        // $tasks = Task::where ('id', '<=', 30)
+        //             ->where('id','>=','20')->get();
 
-        $tasks = Task::whereBetween ('id',[20,30],)->get();
-        //select * from tasks where id between 20 dan 30
+        // $tasks = Task::whereBetween ('id',[20,30],)->get();
+        // //select * from tasks where id between 20 dan 30
 
-        $tasks = Task::where ('id','=',10)->get();
-        //select * from tasks where id 10
+        // $tasks = Task::where ('id','=',10)->get();
+        // //select * from tasks where id 10
 
-        $tasks = Task::where ('title','like','%magnam%')->get();
-        //select * from tasks where title magnam
+        // $tasks = Task::where ('title','like','%magnam%')->get();
+        // //select * from tasks where title magnam
 
-        $tasks = Task::find(10);
+        // $tasks = Task::find(10);
 
+        //$tasks = Task::all();
+        $tasks = Task::with('user')->get();
 
-        dd($tasks);
-        // dd($task->user->name);
-        // dd($task->user->tasks);
-        // dd($tasks->user->tasks->last()->title);
+        return view('task.index', compact ('tasks'));
+
+        //dd($tasks);
+
+    }
+
+    function show(Task $task) {
+        $task = $task->load('comments.user','user');
+        return view('task.show', compact('task'));
 
     }
 
