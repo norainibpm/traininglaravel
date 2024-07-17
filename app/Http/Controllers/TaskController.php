@@ -41,5 +41,15 @@ class TaskController extends Controller
         // dd($tasks->user->tasks->last()->title);
 
     }
+
+    /**
+     * Get the user that owns the TaskController
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function comment(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'task_id', 'id');
+    }
     //
 }
