@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Nonstandard\Uuid;
 use Yajra\DataTables\Facades\DataTables;
 
 class TaskController extends Controller
@@ -82,6 +84,40 @@ class TaskController extends Controller
         })
         ->rawColumns(['action'])
         ->make(true);
+    }
+
+    function create() {
+        $users = User::pluck('name', 'id');
+        return view('tasks.create', compact ('users'));
+    }
+
+    function store(Request $request){
+        $request ->validate([
+            "title" => 'required|max:255',
+            "user_id" => 'required',
+            "due_date" => 'required|date|after_or_equal:today',
+            "description" =>'required',
+        ],[
+
+            'title.required' => 'Sila masukkan tajuk',
+            'user_id.required' => 'Sila pilih user',
+            'due_date.required' => 'Sila pilih tarikh',
+            'due_date.after_or_equal' => 'Tarikh mesti selepas hari ini',
+            'due_date.date' => 'Sila pilih tarikh',
+            'description.required' => 'Sila masukkan desciption'
+
+
+        ]);
+
+        $task = new Task();
+        $task->uuid = Uuid::uuid4();
+        $task->title = $request->title;
+        $task->user_id = $request->user_id;
+        $task->due_date = $request->due_date;
+        $task->description = $request->description;
+        $task->save();
+
+        return redirect()->route('tasks.index');
     }
 
     //
